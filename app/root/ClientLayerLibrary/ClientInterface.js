@@ -23,7 +23,7 @@ function start(auth_params, logger){
                                                                           //logger.debug(data)
                                                                           try{
                                                                             if(data.success){
-                                                                              const url = "https://" + data.feed_server.replace("www.","");
+                                                                              const url = "https://" + "thecrypticprices.com/" + data.feed_server;
                                                                               const urlObj = (new URL(url));
                                                                               const path = urlObj.pathname
 
