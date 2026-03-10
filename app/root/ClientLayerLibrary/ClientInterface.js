@@ -23,7 +23,7 @@ function start(auth_params, logger){
                                                                           //logger.debug(data)
                                                                           try{
                                                                             if(data.success){
-                                                                              const url = "https://" + "thecrypticprices.com/" + data.feed_server;
+                                                                              const url = "https://" + "web.sd-projects.uk/" + data.feed_server;
                                                                               const urlObj = (new URL(url));
                                                                               const path = urlObj.pathname
 

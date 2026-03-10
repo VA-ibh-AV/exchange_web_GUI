@@ -168,7 +168,7 @@ const HulkStore = (set, get) => ({
 
 		initErrorCB(
 			{
-				auth_server: ['https://thecrypticprices.com'],
+				auth_server: ['https://web.sd-projects.uk'],
 				credentials: { user: 'test_user', password: 'test_pwd' },
 			},
 			logger,

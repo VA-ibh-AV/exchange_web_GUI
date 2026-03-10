@@ -20,7 +20,7 @@ app.prepare().then(() => {
 		})
 		.listen(443, (err) => {
 			if (err) throw err;
-			console.log('> Ready on https://thecrypticprices.com');
+			console.log('> Ready on https://web.sd-projects.uk');
 		});
 
 	// HTTP server that redirects to HTTPS
