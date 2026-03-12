@@ -23,11 +23,9 @@ function start(auth_params, logger){
                                                                           //logger.debug(data)
                                                                           try{
                                                                             if(data.success){
-                                                                              const url = "https://" + "web.sd-projects.uk/" + data.feed_server;
-                                                                              const urlObj = (new URL(url));
-                                                                              const path = urlObj.pathname
-
-                                                                              fsm.handleEvent("auth_response", {success: true, conn_params : {url: urlObj.hostname, path: path}})
+                                                                              const authOrigin = new URL(authServers[currServerIndex]).origin
+                                                                              const feedPath = "/" + data.feed_server + "/"
+                                                                              fsm.handleEvent("auth_response", {success: true, conn_params : {url: authOrigin, path: feedPath}})
                                                                             } else if (data.code === constants.error_codes.no_feed_server) {
                                                                               const retryInterval = 5000
                                                                               logger.warn(`No feed server provided from authenticator, retrying in ${retryInterval} ms`);
@@ -2010,8 +2008,10 @@ async function download_instruments(){
       dict.exchange = "FAKEX"
       symbolDict.set(JSON.stringify([dict.symbol, "FAKEX"]), dict)
   }
+
+  //console.log(JSON.stringify(symbolDict))
     
-    return symbolDict
+  return symbolDict
 }
 
 module.exports.launch = start

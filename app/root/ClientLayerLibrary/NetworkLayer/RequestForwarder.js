@@ -30,22 +30,11 @@ function subscribe(symbol, exchange, type, callback){
     let matter = subscriptionBook.get(key)
     if (undefined === matter) {
         const updateEvt = new Event()
-        let timerFired = false
-        let latestUpdate = null
         matter =
         {
             updator :  (update) => {
-                            latestUpdate = update
-                            if (!timerFired)
-                            {
-                                const func = () =>{
-                                    if(!updateEvt.empty()) {
-                                        updateEvt.raise(latestUpdate)
-                                        setTimeout(func, 1000)
-                                        timerFired = true
-                                    }
-                                }
-                                func();
+                            if (!updateEvt.empty()) {
+                                updateEvt.raise(update)
                             }
                         },
             evt :       updateEvt
@@ -137,7 +126,7 @@ function connect(serverAddress, libLogger){//Server address <ip>:<port>
                 //       path: "/ws/"
                 //     }
                 // },                
-                // transports: ['websocket'],
+                transports: ['websocket'],
                 //secure: window.location.protocol === 'https:',
                 //rejectUnauthorized: false, // This is often necessary for self-signed certificates
                 reconnection: false,
