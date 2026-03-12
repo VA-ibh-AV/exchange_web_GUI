@@ -1,6 +1,6 @@
 const virtualSubsccriptionFunctions = require('./IndependentCommonUtils/VirtualSubscriptionHandler')
 const baskerSubscriptionFunctions = require('./IndependentCommonUtils/BasketSubscriptionHandler')
-const { launch, raise_request, download_instruments} = require('./ClientLayerLibrary/ClientInterface')
+const { launch, raise_request, download_instruments, setSubscriptionErrorHandler} = require('./ClientLayerLibrary/ClientInterface')
                                     
 let globalDict = null
 
@@ -204,3 +204,4 @@ module.exports.subscribeVirtual = subscribeVirtual
 module.exports.unsubscribeVirtual = unsubscribeVirtual
 module.exports.subscribeBasket = subscribeBasket
 module.exports.unsubscribeBasket = unsubscribeBasket
+module.exports.setSubscriptionErrorHandler = setSubscriptionErrorHandler

@@ -7,6 +7,7 @@ let sock = null
 let logger = null
 const subscriptionBook = new Map()
 let disconnectionHandler = null
+let subscriptionErrorHandler = null
 let requestSerializer = null
 let actionAntiAction = null
 class RequestSerializers{
@@ -47,6 +48,8 @@ function subscribe(symbol, exchange, type, callback){
                     logger.warn(`subscriptionSuccess for: ${key}`)
                 } else {
                     logger.warn(`subscriptionFailure for: ${key}, reason: ${result.reason}`)
+                    subscriptionBook.delete(key)
+                    if (subscriptionErrorHandler) subscriptionErrorHandler(result.reason)
                 }
             }, symbol, exchange, type)
         })
@@ -154,6 +157,8 @@ function connect(serverAddress, libLogger){//Server address <ip>:<port>
                     logger.warn(`subscriptionSuccess for: ${key}`)
                 } else {
                     logger.warn(`subscriptionFailure for: ${key}, reason: ${result.reason}`)
+                    subscriptionBook.delete(key)
+                    if (subscriptionErrorHandler) subscriptionErrorHandler(result.reason)
                 }
             }, symbol, exchange, type)
         })
@@ -192,7 +197,12 @@ function setDisconnectionHandler(callback){
     disconnectionHandler = callback
 }
 
+function setSubscriptionErrorHandler(callback){
+    subscriptionErrorHandler = callback
+}
+
 module.exports.connect = connect
 module.exports.forward = forward
 module.exports.disconnect = disconnect
 module.exports.setDisconnectionHandler = setDisconnectionHandler
+module.exports.setSubscriptionErrorHandler = setSubscriptionErrorHandler

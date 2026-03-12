@@ -86,6 +86,10 @@ function start(auth_params, logger){
     fsm.start()
 }
 
+function setSubscriptionErrorHandler(callback){
+    NetworkServices.setSubscriptionErrorHandler(callback)
+}
+
 
 function executeIntent(intent){
     fsm.handleEvent("client_intent", intent)
@@ -2024,3 +2028,4 @@ async function download_instruments(){
 module.exports.launch = start
 module.exports.raise_request = executeIntent
 module.exports.download_instruments = download_instruments
+module.exports.setSubscriptionErrorHandler = setSubscriptionErrorHandler

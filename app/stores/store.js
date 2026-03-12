@@ -7,7 +7,47 @@ import {
 	unsubscribeVirtual,
 	subscribeBasket,
 	unsubscribeBasket,
+	setSubscriptionErrorHandler,
 } from '../root/Gui-Library-Interface';
+
+const AUTH_SERVER = 'https://web.sd-projects.uk';
+const SAVE_DEBOUNCE_MS = 10000;
+let saveTimer = null;
+
+function stripCallbacks(subs) {
+	if (!subs) return subs;
+	const cleaned = {};
+	for (const exchange of Object.keys(subs)) {
+		cleaned[exchange] = {
+			vanilla: subs[exchange].vanilla.map(({ cb, depth_cb, ...rest }) => rest),
+			crossPrices: subs[exchange].crossPrices.map(({ cb, depth_cb, ...rest }) => rest),
+			baskets: subs[exchange].baskets.map(({ cb, depth_cb, ...rest }) => rest),
+		};
+	}
+	return cleaned;
+}
+
+function debouncedSave(get) {
+	if (saveTimer) clearTimeout(saveTimer);
+	saveTimer = setTimeout(() => flushSave(get), SAVE_DEBOUNCE_MS);
+}
+
+function flushSave(get) {
+	if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+	const state = get();
+	if (!state.auth || !state.auth.token || state.auth.tier === 'anonymous') return;
+	const deviceId = typeof localStorage !== 'undefined' && localStorage.getItem('qh_device_id');
+	if (!deviceId || !state.subscriptions) return;
+
+	fetch(AUTH_SERVER + '/auth/subscriptions', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + state.auth.token,
+		},
+		body: JSON.stringify({ deviceId, subscriptions: stripCallbacks(state.subscriptions) }),
+	}).catch(() => { /* network error — will retry on next change */ });
+}
 
 // const subscriptions = {
 //     "exchange_key": {
@@ -169,6 +209,7 @@ const HulkStore = (set, get) => ({
 	},
 
 	logout: () => {
+		flushSave(get);
 		set({ auth: null, isReady: false, subscriptions: null, exchanges: {}, activeExchange: null });
 	},
 
@@ -177,6 +218,12 @@ const HulkStore = (set, get) => ({
 		if (!auth || !auth.token) return;
 
 		console.log('initilize everything');
+
+		setSubscriptionErrorHandler((reason) => {
+			set((state) => ({
+				errors: [...state.errors, new Error(reason)],
+			}));
+		});
 
 		initErrorCB(
 			{
@@ -200,6 +247,21 @@ const HulkStore = (set, get) => ({
 						value;
 				}
 
+				// Restore saved subscriptions or start with empty state
+				const saved = get().auth && get().auth.savedSubscriptions;
+				const restoredSubs = allowed_exchanges.reduce((total, temp) => {
+					if (saved && saved[temp]) {
+						total[temp] = {
+							vanilla: (saved[temp].vanilla || []).map(v => ({ ...v, cb: null, depth_cb: null })),
+							crossPrices: (saved[temp].crossPrices || []).map(v => ({ ...v, cb: null })),
+							baskets: (saved[temp].baskets || []).map(v => ({ ...v, cb: null })),
+						};
+					} else {
+						total[temp] = { vanilla: [], crossPrices: [], baskets: [] };
+					}
+					return total;
+				}, {});
+
 				set((state) => ({
 					exchanges: allowed_exchanges.reduce((total, temp) => {
 						total[`${temp}`] = {
@@ -209,14 +271,7 @@ const HulkStore = (set, get) => ({
 						};
 						return total;
 					}, {}),
-					subscriptions: allowed_exchanges.reduce((total, temp) => {
-						total[`${temp}`] = {
-							vanilla: [],
-							crossPrices: [],
-							baskets: [],
-						};
-						return total;
-					}, {}),
+					subscriptions: restoredSubs,
 					isReady: true,
 				}));
 			},
@@ -309,6 +364,7 @@ const HulkStore = (set, get) => ({
 				},
 			};
 		});
+		debouncedSave(get);
 	},
 
 	removeSubscription: (type, symbol) => {
@@ -331,6 +387,7 @@ const HulkStore = (set, get) => ({
 				},
 			};
 		});
+		debouncedSave(get);
 	},
 
 	manageDepthSubscription: (type, symbol, action) => {
@@ -451,6 +508,7 @@ const HulkStore = (set, get) => ({
 				},
 			};
 		});
+		debouncedSave(get);
 	},
 
 	unsubscribe: (type, symbol, exchange, subsType, cb, subsObject = {}) => {
@@ -533,6 +591,7 @@ const HulkStore = (set, get) => ({
 				},
 			};
 		});
+		debouncedSave(get);
 	},
 
 	unsubscribeAllInActive: (activeExchange, subs) => {

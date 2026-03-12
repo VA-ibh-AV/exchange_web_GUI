@@ -5,6 +5,15 @@ import { useHulkStore } from '../stores/store';
 
 const AUTH_SERVER = 'https://web.sd-projects.uk';
 
+function getDeviceId() {
+	let id = localStorage.getItem('qh_device_id');
+	if (!id) {
+		id = crypto.randomUUID();
+		localStorage.setItem('qh_device_id', id);
+	}
+	return id;
+}
+
 export function LoginPage() {
 	const [mode, setMode] = useState('login'); // 'login' | 'register'
 	const [email, setEmail] = useState('');
@@ -19,18 +28,19 @@ export function LoginPage() {
 		setError('');
 		setLoading(true);
 
+		const deviceId = getDeviceId();
 		const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
 		try {
 			const res = await fetch(AUTH_SERVER + endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email, password }),
+				body: JSON.stringify({ email, password, deviceId }),
 			});
 			const data = await res.json();
 			if (!data.success) {
 				setError(data.reason || 'Authentication failed');
 			} else {
-				setAuth({ token: data.token, tier: data.tier || 'free', email, feed_server: data.feed_server });
+				setAuth({ token: data.token, tier: data.tier || 'free', email, feed_server: data.feed_server, savedSubscriptions: data.savedSubscriptions || [] });
 			}
 		} catch (err) {
 			setError('Could not reach auth server');
