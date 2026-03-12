@@ -4,6 +4,7 @@ import { SideNavbar } from './components/SideNav';
 import { NavBarComp } from './components/Navbar';
 import { InitConection } from './components/Init';
 import { ErrorMessageDialog } from './components/ErrorMessageDialog';
+import { AuthGate } from './components/AuthGate';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,15 +23,17 @@ export default function RootLayout({ children }) {
 				></script>
 			</head>
 			<body className={inter.className}>
-				<InitConection />
-				<ErrorMessageDialog />
-				<div className='flex h-screen'>
-					<SideNavbar />
-					<div className='ml-64 w-full'>
-						<NavBarComp />
-						{children}
+				<AuthGate>
+					<InitConection />
+					<ErrorMessageDialog />
+					<div className='flex h-screen'>
+						<SideNavbar />
+						<div className='ml-64 w-full'>
+							<NavBarComp />
+							{children}
+						</div>
 					</div>
-				</div>
+				</AuthGate>
 			</body>
 		</html>
 	);

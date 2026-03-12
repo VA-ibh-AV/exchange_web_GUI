@@ -1,8 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useHulkStore } from '../stores/store';
 
 export function NavBarComp() {
+	const auth = useHulkStore((state) => state.auth);
+	const logout = useHulkStore((state) => state.logout);
+
 	return (
 		<nav className='bg-[#002350] border-gray-200 dark:bg-gray-900'>
 			<div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4'>
@@ -46,6 +50,19 @@ export function NavBarComp() {
 						</button>
 					</div>
 				</form>
+				<div className='flex items-center gap-3'>
+					{auth && (
+						<span className='text-xs text-gray-300 uppercase tracking-wide'>
+							{auth.tier}
+						</span>
+					)}
+					<button
+						onClick={logout}
+						className='text-sm text-gray-300 hover:text-white border border-gray-500 rounded-lg px-3 py-1.5 hover:bg-gray-700 transition-colors'
+					>
+						Logout
+					</button>
+				</div>
 			</div>
 		</nav>
 	);

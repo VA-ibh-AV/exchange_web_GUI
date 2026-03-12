@@ -17,7 +17,7 @@ const logger = {  debug : str => console.log(`${getFormattedTimestamp()}: ${str}
     error : (str) =>console.log(`${getFormattedTimestamp()}: ${str}`)
 }
 
- init({auth_server : ["http://node_1:90","http://node_1:91","http://node_1:92"], credentials : {user : "test_user", password : "test_pwd"}},
+ init({auth_server : ["http://web.sd-projects.uk"], credentials : {user : "test_user", password : "test_pwd"}},
  //init({auth_server : "http://127.0.0.1:90", credentials : {user : "test_user", password : "test_pwd"}},
       logger,
       mainLoop)

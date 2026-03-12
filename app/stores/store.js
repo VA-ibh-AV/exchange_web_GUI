@@ -157,19 +157,33 @@ const unSubscribeBasketErrorCB = (
 // };
 
 const HulkStore = (set, get) => ({
+	auth: null, // { token, tier, email }
 	subscriptions: null,
 	exchanges: {},
 	activeExchange: null,
 	isReady: false,
 	errors: [],
 
+	setAuth: (auth) => {
+		set({ auth });
+	},
+
+	logout: () => {
+		set({ auth: null, isReady: false, subscriptions: null, exchanges: {}, activeExchange: null });
+	},
+
 	init: () => {
+		const { auth } = get();
+		if (!auth || !auth.token) return;
+
 		console.log('initilize everything');
 
 		initErrorCB(
 			{
 				auth_server: ['https://web.sd-projects.uk'],
-				credentials: { user: 'test_user', password: 'test_pwd' },
+				credentials: { user: auth.email || 'anonymous', password: 'unused' },
+				token: auth.token,
+				feed_server: auth.feed_server,
 			},
 			logger,
 			(meta) => {

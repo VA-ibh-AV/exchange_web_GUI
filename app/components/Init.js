@@ -4,11 +4,15 @@ import { useEffect } from 'react';
 import { useHulkStore } from '../stores/store';
 
 export function InitConection() {
-	const hulkStore = useHulkStore((state) => state);
+	const auth = useHulkStore((state) => state.auth);
+	const init = useHulkStore((state) => state.init);
+	const isReady = useHulkStore((state) => state.isReady);
 
 	useEffect(() => {
-		hulkStore.init();
-	}, []);
+		if (auth && auth.token && !isReady) {
+			init();
+		}
+	}, [auth]);
 
 	return <></>;
 }
