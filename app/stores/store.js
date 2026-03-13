@@ -729,6 +729,12 @@ const HulkStore = (set, get) => ({
 export const useHulkStore = create(
 	persist(HulkStore, {
 		name: 'qh-auth',
-		partialize: (state) => ({ auth: state.auth }),
+		partialize: (state) => {
+			// Only persist if not anonymous
+			if (!state.auth || state.auth.tier === 'anonymous') {
+				return { auth: null };
+			}
+			return { auth: state.auth };
+		},
 	})
 );
