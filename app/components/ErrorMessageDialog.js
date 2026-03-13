@@ -12,21 +12,21 @@ export function ErrorMessageDialog() {
 
 	if (errors && errors.length > 0) {
 		return (
-			<div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50'>
-				<div className='bg-white rounded-lg shadow-lg p-6 w-80'>
+			<div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50'>
+				<div className='bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-6 w-96'>
 					<div className='flex justify-between items-center mb-4'>
-						<h2 className='text-lg font-semibold text-red-600'>
+						<h2 className='text-lg font-semibold text-red-400'>
 							Error
 						</h2>
 						<button
-							className='text-gray-600 hover:text-gray-900'
+							className='text-gray-400 hover:text-white'
 							onClick={onClose}
 						>
-							&#10005; {/* X icon */}
+							&#10005;
 						</button>
 					</div>
 					{errors.map((err, idx) => (
-						<p className='text-gray-700' key={idx}>
+						<p className='text-gray-300 text-sm' key={idx}>
 							{err.message}
 						</p>
 					))}

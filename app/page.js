@@ -6,24 +6,67 @@ export default function Home() {
 
 	if (isReady) {
 		return (
-			<section className='bg-white dark:bg-gray-900'>
-				<div className='py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16'>
-					<h1 className='mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white'>
-						We invest in the world’s potential
+			<div className='bg-gray-900 h-full overflow-y-auto px-8 py-10'>
+				<div className='max-w-4xl mx-auto'>
+					{/* Header */}
+					<h1 className='text-3xl font-bold text-white mb-2'>
+						Quant<span className='text-yellow-400'>Hulk</span>
 					</h1>
-					<p className='mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-400'>
-						Welcome to QuantHulk, your one-stop destination for the
-						best tools in cryptocurrency trading and management.
-						Explore our comprehensive suite of utilities designed to
-						optimize your crypto investments and enhance your
-						trading experience.
+					<p className='text-gray-400 mb-10'>
+						Real-time cryptocurrency price feeds. Select an exchange from the sidebar to get started.
 					</p>
+
+					{/* Feature cards */}
+					<div className='grid gap-6 md:grid-cols-3'>
+						{/* Vanilla */}
+						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
+							<div className='flex items-center gap-2 mb-3'>
+								<span className='text-xl'>📈</span>
+								<h2 className='text-lg font-semibold text-white'>Vanilla Prices</h2>
+							</div>
+							<p className='text-sm text-gray-400 leading-relaxed'>
+								Subscribe to real-time trade prices and order book depth for individual trading pairs like BTCUSDT or ETHUSDT. Toggle depth view to see live bid/ask levels.
+							</p>
+						</div>
+
+						{/* Cross */}
+						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
+							<div className='flex items-center gap-2 mb-3'>
+								<span className='text-xl'>🔀</span>
+								<h2 className='text-lg font-semibold text-white'>Cross Prices</h2>
+							</div>
+							<p className='text-sm text-gray-400 leading-relaxed'>
+								Compute synthetic cross rates between two assets that share a common quote currency. For example, derive a live BTC/ETH price from BTC/USDT and ETH/USDT feeds.
+							</p>
+						</div>
+
+						{/* Buckets */}
+						<div className='bg-gray-800 border border-gray-700 rounded-lg p-6'>
+							<div className='flex items-center gap-2 mb-3'>
+								<span className='text-xl'>🪣</span>
+								<h2 className='text-lg font-semibold text-white'>Buckets</h2>
+							</div>
+							<p className='text-sm text-gray-400 leading-relaxed'>
+								Build a weighted basket of assets (e.g. 0.5 BTC + 2 ETH) and track its combined value in a target currency in real time. Useful for portfolio-level price monitoring.
+							</p>
+						</div>
+					</div>
+
+					{/* Quick start */}
+					<div className='mt-10 bg-gray-800 border border-gray-700 rounded-lg p-6'>
+						<h2 className='text-lg font-semibold text-white mb-3'>Getting Started</h2>
+						<ol className='text-sm text-gray-400 space-y-2 list-decimal list-inside'>
+							<li>Pick an exchange from the dropdown in the sidebar</li>
+							<li>Navigate to Vanilla, Cross, or Buckets from the menu that appears</li>
+							<li>Search for symbols, add subscriptions, and watch prices stream in</li>
+						</ol>
+					</div>
 				</div>
-			</section>
+			</div>
 		);
 	} else {
 		return (
-			<div className='flex items-center justify-center w-full h-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700'>
+			<div className='flex items-center justify-center w-full h-full bg-gray-900'>
 				<div role='status'>
 					<svg
 						aria-hidden='true'

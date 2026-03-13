@@ -101,5 +101,5 @@ export default function VanillaSubscriptionCollasableTable({
 		);
 	}
 
-	return <div>sdsf</div>;
+	return null;
 }

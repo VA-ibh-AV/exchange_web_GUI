@@ -90,6 +90,12 @@ export default function Component() {
 	return (
 		<>
 			<div className='m-12 mx-24'>
+				{!activeExchange ? (
+					<div className='flex flex-col items-center justify-center h-64 text-gray-400'>
+						<p className='text-lg'>Select an exchange from the sidebar to view prices</p>
+					</div>
+				) : (
+				<>
 				<form className='flex items-center justify-between space-x-2'>
 					<div className='flex items-start'>
 						<div>
@@ -187,6 +193,8 @@ export default function Component() {
 				}
 
 				<div className='w-full h-44'></div>
+				</>
+				)}
 			</div>
 		</>
 	);
