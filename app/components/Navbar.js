@@ -58,6 +58,7 @@ function ChangePasswordModal({ open, onClose, token }) {
 				setCurrentPassword('');
 				setNewPassword('');
 				setConfirmPassword('');
+				setTimeout(() => handleClose(), 1200);
 			}
 		} catch {
 			setError('Could not reach auth server');
