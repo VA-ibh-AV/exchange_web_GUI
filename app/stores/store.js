@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import {
 	subscribe,
 	unsubscribe,
@@ -196,6 +197,62 @@ const unSubscribeBasketErrorCB = (
 // 	};
 // };
 
+// Decode JWT exp without a library
+function getTokenExp(token) {
+	try {
+		const payload = JSON.parse(atob(token.split('.')[1]));
+		return payload.exp || 0;
+	} catch {
+		return 0;
+	}
+}
+
+function isTokenExpired(token) {
+	if (!token) return true;
+	return getTokenExp(token) * 1000 <= Date.now();
+}
+
+// Returns true if token expires within the given window (seconds)
+function tokenExpiresSoon(token, windowSec = 3600) {
+	if (!token) return true;
+	const expMs = getTokenExp(token) * 1000;
+	return expMs - Date.now() <= windowSec * 1000;
+}
+
+let refreshTimer = null;
+
+function startTokenRefresh(get, set) {
+	if (refreshTimer) clearInterval(refreshTimer);
+	// Check every 5 minutes
+	refreshTimer = setInterval(async () => {
+		const { auth } = get();
+		if (!auth || !auth.token || auth.tier === 'anonymous') return;
+		if (!tokenExpiresSoon(auth.token, 3600)) return; // more than 1 hour left, skip
+		try {
+			const res = await fetch(AUTH_SERVER + '/auth/refresh', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + auth.token,
+				},
+			});
+			const data = await res.json();
+			if (data.success) {
+				set({ auth: { ...auth, token: data.token, tier: data.tier } });
+			} else {
+				// Token rejected — force logout
+				get().logout();
+			}
+		} catch {
+			// Network error — will retry next interval
+		}
+	}, 5 * 60 * 1000);
+}
+
+function stopTokenRefresh() {
+	if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+
 const HulkStore = (set, get) => ({
 	auth: null, // { token, tier, email }
 	subscriptions: null,
@@ -206,9 +263,13 @@ const HulkStore = (set, get) => ({
 
 	setAuth: (auth) => {
 		set({ auth });
+		if (auth && auth.token && auth.tier !== 'anonymous') {
+			startTokenRefresh(get, set);
+		}
 	},
 
 	logout: () => {
+		stopTokenRefresh();
 		flushSave(get);
 		set({ auth: null, isReady: false, subscriptions: null, exchanges: {}, activeExchange: null });
 	},
@@ -665,4 +726,9 @@ const HulkStore = (set, get) => ({
 	},
 });
 
-export const useHulkStore = create(HulkStore);
+export const useHulkStore = create(
+	persist(HulkStore, {
+		name: 'qh-auth',
+		partialize: (state) => ({ auth: state.auth }),
+	})
+);
