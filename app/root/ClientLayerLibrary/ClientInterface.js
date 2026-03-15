@@ -10,6 +10,7 @@ function start(auth_params, logger){
     fsm = new ClientLayerFSM({auth_params : auth_params,
                               connect_delay : 0,
                               authentication_method : (auth_params)=>{ 
+                                                                        //logger.debug(`auth_params: ${JSON.stringify(auth_params)}`)
                                                                         // If token and feed_server already provided (from login/register), skip HTTP auth
                                                                         if (auth_params.token && auth_params.feed_server) {
                                                                           const authOrigin = new URL(auth_params.auth_server[0]).origin
@@ -21,8 +22,10 @@ function start(auth_params, logger){
                                                                         const func = ()=>{
                                                                         const authServers = auth_params.auth_server
                                                                         const numAuthServers = authServers.length
-                                                                        const url = authServers[currServerIndex] + "/auth/" + JSON.stringify(auth_params.credentials)
-                                                                        axios.get(url)
+                                                                        axios.post(authServers[currServerIndex] + '/auth/tlogin',
+                                                                          {email: auth_params.credentials.user},
+                                                                          {headers: { 'Content-Type': 'application/json',
+                                                                                      'Authorization': 'Bearer ' + auth_params.token,}})
                                                                         .then(resData => {
                                                                           const data = resData.data;
                                                                           logger.debug(`Response from auth_server: ${JSON.stringify(data)}`)
@@ -32,7 +35,7 @@ function start(auth_params, logger){
                                                                             if(data.success){
                                                                               const authOrigin = new URL(authServers[currServerIndex]).origin
                                                                               const feedPath = "/" + data.feed_server + "/"
-                                                                              fsm.handleEvent("auth_response", {success: true, conn_params : {url: authOrigin, path: feedPath, token: data.token}})
+                                                                              fsm.handleEvent("auth_response", {success: true, conn_params : {url: authOrigin, path: feedPath, token: auth_params.token}})
                                                                             } else if (data.code === constants.error_codes.no_feed_server) {
                                                                               const retryInterval = 5000
                                                                               logger.warn(`No feed server provided from authenticator, retrying in ${retryInterval} ms`);

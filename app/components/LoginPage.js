@@ -40,7 +40,7 @@ export function LoginPage() {
 			if (!data.success) {
 				setError(data.reason || 'Authentication failed');
 			} else {
-				setAuth({ token: data.token, tier: data.tier || 'free', email, feed_server: data.feed_server, savedSubscriptions: data.savedSubscriptions || [] });
+				setAuth({ token: data.token, tier: data.tier || 'free', email, feed_server: data.feed_server, deviceId : deviceId, savedSubscriptions: data.savedSubscriptions || [] });
 			}
 		} catch (err) {
 			setError('Could not reach auth server');
