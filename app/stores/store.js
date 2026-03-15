@@ -291,7 +291,6 @@ const HulkStore = (set, get) => ({
 				auth_server: ['https://web.sd-projects.uk'],
 				credentials: { user: auth.email || 'anonymous', password: 'unused' },
 				token: auth.token,
-				feed_server: auth.feed_server,
 			},
 			logger,
 			(meta) => {

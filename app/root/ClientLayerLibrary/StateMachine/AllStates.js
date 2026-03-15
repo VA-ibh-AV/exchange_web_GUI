@@ -109,12 +109,7 @@ class Operational extends State{
 
     on_disconnect(reason){
            this.logger.warn(`Disconnection evt received, reason: ${reason}, auth_params: ${JSON.stringify(this.authentication_params)}`)
-           //Remove token and feed_server from authentication_params
-           const { feed_server, ...rest } = this.authentication_params.auth_params;
-           this.authentication_params.auth_params = rest
            return new Authenticating({ ...this.authentication_params, connect_delay: 5000 });
-
-           //return new Authenticating({ ...this.authentication_params, connect_delay: 5000 });
     }
 
     on_auth_response(response){

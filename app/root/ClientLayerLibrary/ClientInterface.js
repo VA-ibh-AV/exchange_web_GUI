@@ -10,14 +10,6 @@ function start(auth_params, logger){
     fsm = new ClientLayerFSM({auth_params : auth_params,
                               connect_delay : 0,
                               authentication_method : (auth_params)=>{ 
-                                                                        //logger.debug(`auth_params: ${JSON.stringify(auth_params)}`)
-                                                                        // If token and feed_server already provided (from login/register), skip HTTP auth
-                                                                        if (auth_params.token && auth_params.feed_server) {
-                                                                          const authOrigin = new URL(auth_params.auth_server[0]).origin
-                                                                          const feedPath = "/" + auth_params.feed_server + "/"
-                                                                          fsm.handleEvent("auth_response", {success: true, conn_params : {url: authOrigin, path: feedPath, token: auth_params.token}})
-                                                                          return
-                                                                        }
                                                                         let currServerIndex = 0
                                                                         const func = ()=>{
                                                                         const authServers = auth_params.auth_server
